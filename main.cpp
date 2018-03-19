@@ -14,54 +14,95 @@
 #include <cstdlib>
 #include <ctime>
 
+#define COUNT_OF_GENERATION 50
+
 class Human{
 public:
-    int age = 0, count = 0;
-    void Generation () {
-    age = 1 + rand() % 80;
-    }
+    virtual ~Human() = default;
+    virtual int getGender() = 0;
+    virtual int getAge() = 0;
 };
 
 class Man : public Human {
+    int m_age;
 public:
+    Man()
+        :m_age(0)
+        {}
+    Man(int age)
+        :m_age(age)
+        {}
+    
+    int getAge() override
+    {
+        return m_age;
+    }
+    
+    int getGender() override
+    {
+        return 1;
+    }
+    
 };
 
 class Woman : public Human {
+    int m_age;
 public:
+    Woman()
+        :m_age(0)
+        {}
+    Woman(int age)
+        :m_age(age)
+        {}
+     
+    int getAge() override
+    {
+        return m_age;
+    }
+    
+    int getGender() override
+    {
+        return 0;
+    }
 };
 
-//A *a = new B();
-//a -> f();
 int main() {
 
-    int i, ALL_man= 0, ALL_woman= 0, WhoBorn = 0, woman_count = 0, man_count = 0;
-    int average = 0, average_man = 0, average_woman;
-
-    std::vector <Human> Humanvector(100);
+    //It need to be difined where it is needed
+    int woman_count = 0, man_count = 0;
+    //Use a vector of a pointers - it is good thing))
+    std::vector <Human *> humanvector;
     srand(time(0));
 
-    for (i = 0; i < 100; i++) {
+    for (int i = 0; i < COUNT_OF_GENERATION; ++i) {
+        int WhoBorn = rand();
 
-        WhoBorn = 1 + rand() % 2;
-
-        if(WhoBorn == 1 ) {
-            Man Humanvector[i];
-            Humanvector[i].Generation();
-            ALL_man += Humanvector[i].age;
+        if(WhoBorn % 2 ) {
+            //Man Humanvector[i]; - What does it mean???
+            //Humanvector[i].Generation(); - not bad
             man_count++;
-            std::cout << i << "Man" << std::endl;
+            humanvector.push_back(new Man(1 + rand() % 80));            
         }
-        if (WhoBorn == 2 ){
-            Woman Humanvector[i];
-            Humanvector[i].Generation();
-            ALL_woman += Humanvector[i].age;
-            woman_count++;
-            std::cout << i << "Woman" << std::endl;
+        else{
+            //The same we do for Women
         }
+    }//There are we are filling our vector
+    //Define 
+    float average = 0.0;
+    float average_man = 0.0;
+    float average_woman = 0.0;
+    for(auto human : humanvector){
+        float tmp_average += human->getAge();
+        if(human->getGender()){
+            average_man += tmp_average;
+        }else{
+            //
+        }
+        average += tmp_average;
     }
-    average = (ALL_woman + ALL_man) / 100;
-    average_man = ALL_man / man_count;
-    average_woman = ALL_woman / woman_count;
+    average /= COUNT_OF_GENERATION; 
+    average_man /= man_count;
+    average_woman /= woman_count;
     std::cout<< "Средняя продолжительность жизни = " << average << std::endl;
     std::cout<< "Средняя продолжительность жизни мужчины= " << average_man << std::endl;
     std::cout<< "Средняя продолжительность жизни женщины= " << average_woman << std::endl;
